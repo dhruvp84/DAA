@@ -1,64 +1,67 @@
-#include<iostream>
-#include<vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-int weights[] = {2, 3, 1}, values[] = {6, 15, 7};
-int solution = 0, n = 3;
 
-std::vector<int> vsol;
-std::vector<int> temp;
-
-bool issol;
-
-void Knapsack (int i, int max, int value)
+void dfs(vector<int> adj[], int V, vector<int>& vis,
+		int i, int curr)
 {
-  for (int k = i; k < n; k++) {
-    if ( max > 0)
-    {
-        if (weights[k] <= max)
-        {
-          temp.push_back(k);
-          if (value+ values[k] >= solution)
-          {
-            solution = value + values[k];
-            issol = true;
-          }
-        }
-        if ( (k+1) < n)
-        {
-          Knapsack (k+1, max - weights[k], value + values[k]);
-        }
-        else
-        {
-          if (issol == true)
-          {
-            if (! vsol.empty()) vsol.clear();
-            std::move(temp.begin(), temp.end(), std::back_inserter(vsol));
-            temp.clear();
-            issol = false;
-          } else temp.clear();
-          return;
-        }
-    }
-    else
-    {
-        if (issol == true)
-        {
-            if (! vsol.empty()) vsol.clear();
-            std::move(temp.begin(), temp.end(), std::back_inserter(vsol));
-            temp.clear();
-            issol = false;
-        } else temp.clear();
-        return;
-    }
-  }
+	vis[curr] = 1;
+	for (auto x : adj[curr]) {
+		if (x != i) {
+			if (!vis[x]) {
+				dfs(adj, V, vis, i, x);
+			}
+		}
+	}
+}
+
+void AP(vector<int> adj[], int V)
+{
+	for (int i = 1; i <= V; i++) {
+
+
+		int components = 0;
+
+		
+		vector<int> vis(V + 1, 0);
+
+		
+		for (int j = 1; j <= V; j++) {
+			if (j != i) {
+
+				
+				if (!vis[j]) {
+
+					
+					components++;
+
+					dfs(adj, V, vis, i, j);
+				}
+			}
+		}
+		
+		if (components > 1) {
+			cout << i << "\n";
+		}
+	}
+}
+void addEdge(vector<int> adj[], int u, int v)
+{
+	adj[u].push_back(v);
+	adj[v].push_back(u);
 }
 
 int main()
 {
-    Knapsack(0, 2, 0);
-    cout << "solution: " << solution << endl;
-    for(vector<int>::iterator it = vsol.begin(); it != vsol.end(); it++)
-        cout << *it << " ";
-    return 0;
+	cout << "Articulation points in the graph \n";
+	int V = 5;
+	vector<int> adj1[V + 1];
+	addEdge(adj1, 1, 2);
+	addEdge(adj1, 2, 3);
+	addEdge(adj1, 1, 3);
+	addEdge(adj1, 3, 4);
+	addEdge(adj1, 4, 5);
+	AP(adj1, V);
+
+	return 0;
 }
